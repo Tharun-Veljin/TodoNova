@@ -29,7 +29,7 @@ ALLOWED_HOSTS = ['*', ".onrender.com"]
 
 # Render the project on the web
 CSRF_TRUSTED_ORIGINS = [
-    "https://tharunvelji.onrender.com",
+    "https://todonova.onrender.com",
 ]
 
 
