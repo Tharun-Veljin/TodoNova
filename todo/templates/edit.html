@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}TodoNova - Edit Task{% endblock %}
+
+{% block content %}
+<div class="edit-container">
+  <div class="edit-header">
+    <h1>Edit Task</h1>
+    <a href="{% url 'todo:home' %}" class="btn btn-secondary btn-sm">← Back to Dashboard</a>
+  </div>
+  
+  <section class="section-card">
+    <form method="POST" class="task-form">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="{{ form.title.id_for_label }}" class="form-label">Task Title</label>
+        {{ form.title }}
+        {% if form.title.errors %}
+          <span class="error-text">{{ form.title.errors.0 }}</span>
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.desc.id_for_label }}" class="form-label">Description</label>
+        {{ form.desc }}
+        {% if form.desc.errors %}
+          <span class="error-text">{{ form.desc.errors.0 }}</span>
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.priority.id_for_label }}" class="form-label">Priority Level</label>
+        {{ form.priority }}
+        {% if form.priority.errors %}
+          <span class="error-text">{{ form.priority.errors.0 }}</span>
+        {% endif %}
+      </div>
+      <div class="form-group checkbox-group" style="flex-direction: row; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+        {{ form.completed }}
+        <label for="{{ form.completed.id_for_label }}" class="form-label" style="text-transform: none; letter-spacing: normal; margin-bottom: 0; cursor: pointer; color: var(--text-main);">Mark task as completed</label>
+        {% if form.completed.errors %}
+          <span class="error-text">{{ form.completed.errors.0 }}</span>
+        {% endif %}
+      </div>
+      <div class="form-actions" style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.5rem;">
+        <a href="{% url 'todo:home' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

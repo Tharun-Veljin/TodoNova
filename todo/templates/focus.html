@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %}TodoNova - Focus Zone{% endblock %}
+
+{% block content %}
+<section class="section-card" style="text-align: center; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 2rem;">
+  <div>
+    <h1 style="background: linear-gradient(135deg, #ffffff 40%, var(--color-primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Focus Zone</h1>
+    <p class="subtitle">Use the Pomodoro technique to maintain focus and execute tasks systematically.</p>
+  </div>
+
+  <!-- Focus Timer Mode Toggles -->
+  <div class="timer-modes" style="display: flex; gap: 0.5rem; justify-content: center; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 0.4rem; border-radius: 9999px;">
+    <button onclick="setMode('work')" id="mode-work" class="btn btn-sm active-mode" style="border-radius: 9999px; font-weight: 700; background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%); color: #fff;">Pomodoro</button>
+    <button onclick="setMode('short')" id="mode-short" class="btn btn-sm" style="border-radius: 9999px; font-weight: 700; background: transparent; color: var(--text-muted); border: none;">Short Break</button>
+    <button onclick="setMode('long')" id="mode-long" class="btn btn-sm" style="border-radius: 9999px; font-weight: 700; background: transparent; color: var(--text-muted); border: none;">Long Break</button>
+  </div>
+
+  <!-- Timer Visual Circle & Counter -->
+  <div class="pomodoro-circle-container" style="position: relative; width: 220px; height: 220px; display: flex; justify-content: center; align-items: center; margin: 1rem 0;">
+    <svg style="width: 100%; height: 100%; transform: rotate(-90deg);">
+      <circle cx="110" cy="110" r="100" style="fill: none; stroke: rgba(255,255,255,0.02); stroke-width: 8;" />
+      <circle cx="110" cy="110" r="100" id="timer-progress" style="fill: none; stroke: var(--color-primary); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 0; transition: stroke-dashoffset 0.1s linear;" />
+    </svg>
+    <div style="position: absolute; display: flex; flex-direction: column; align-items: center; gap: 0.25rem;">
+      <span id="timer-display" style="font-size: 3.25rem; font-weight: 900; color: #fff; font-family: monospace; letter-spacing: -0.02em;">25:00</span>
+      <span id="timer-state-label" style="font-size: 0.75rem; font-weight: 800; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.1em;">Focus Time</span>
+    </div>
+  </div>
+
+  <!-- Timer Actions -->
+  <div style="display: flex; gap: 1rem; width: 100%; justify-content: center;">
+    <button onclick="toggleTimer()" id="control-btn" class="btn btn-primary" style="min-width: 130px;">
+      <span id="control-text">Start Focus</span>
+    </button>
+    <button onclick="resetTimer()" class="btn btn-secondary" style="min-width: 110px;">
+      <span>Reset</span>
+    </button>
+  </div>
+</section>
+
+<!-- Audio asset using synthetic Web Audio API synth beep (no static file required!) -->
+<script>
+  let timerInterval = null;
+  let isRunning = false;
+  let currentMode = 'work'; // 'work', 'short', 'long'
+  let timeLeft = 25 * 60; // 25 minutes
+  let initialTime = 25 * 60;
+
+  const timerDisplay = document.getElementById('timer-display');
+  const timerProgress = document.getElementById('timer-progress');
+  const timerStateLabel = document.getElementById('timer-state-label');
+  const controlText = document.getElementById('control-text');
+  const controlBtn = document.getElementById('control-btn');
+
+  const modes = {
+    work: { duration: 25 * 60, label: 'Focus Time', color: '#06b6d4' },
+    short: { duration: 5 * 60, label: 'Short Break', color: '#10b981' },
+    long: { duration: 15 * 60, label: 'Long Break', color: '#a855f7' }
+  };
+
+  function updateDisplay() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    
+    // Update progress circle svg
+    const dasharray = 628;
+    const progress = (timeLeft / initialTime);
+    const dashoffset = dasharray - (dasharray * progress);
+    timerProgress.style.strokeDashoffset = dashoffset;
+  }
+
+  function setMode(mode) {
+    if (isRunning) {
+      if (!confirm("A focus session is currently running. Do you want to switch modes?")) {
+        return;
+      }
+      pauseTimer();
+    }
+    
+    currentMode = mode;
+    initialTime = modes[mode].duration;
+    timeLeft = initialTime;
+    timerStateLabel.textContent = modes[mode].label;
+    timerStateLabel.style.color = modes[mode].color;
+    timerProgress.style.stroke = modes[mode].color;
+    
+    // Update mode buttons visuals
+    ['work', 'short', 'long'].forEach(m => {
+      const btn = document.getElementById(`mode-${m}`);
+      if (m === mode) {
+        btn.classList.add('active-mode');
+        btn.style.background = `linear-gradient(135deg, ${modes[m].color} 0%, var(--color-accent) 100%)`;
+        btn.style.color = '#fff';
+      } else {
+        btn.classList.remove('active-mode');
+        btn.style.background = 'transparent';
+        btn.style.color = 'var(--text-muted)';
+      }
+    });
+
+    updateDisplay();
+  }
+
+  function toggleTimer() {
+    if (isRunning) {
+      pauseTimer();
+    } else {
+      startTimer();
+    }
+  }
+
+  function startTimer() {
+    isRunning = true;
+    controlText.textContent = "Pause Session";
+    controlBtn.style.boxShadow = `0 6px 20px rgba(168, 85, 247, 0.4)`;
+    
+    timerInterval = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        updateDisplay();
+      } else {
+        playAlertSound();
+        clearInterval(timerInterval);
+        isRunning = false;
+        
+        // Auto cycle modes
+        if (currentMode === 'work') {
+          alert("Focus session complete! Time to take a short break.");
+          setMode('short');
+        } else {
+          alert("Break finished! Time to get back to focus.");
+          setMode('work');
+        }
+      }
+    }, 1000);
+  }
+
+  function pauseTimer() {
+    isRunning = false;
+    controlText.textContent = "Resume Focus";
+    clearInterval(timerInterval);
+  }
+
+  function resetTimer() {
+    pauseTimer();
+    timeLeft = initialTime;
+    updateDisplay();
+    controlText.textContent = "Start Focus";
+  }
+
+  // Synthesize a completion alarm beep using Web Audio API
+  function playAlertSound() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 note
+      gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.2);
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 1.2);
+    } catch(e) {
+      console.log("Audio not supported or permission denied: ", e);
+    }
+  }
+
+  // Init display
+  updateDisplay();
+</script>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}TodoNova - Dashboard{% endblock %}
+
+{% block content %}
+<!-- Premium Hero Banner -->
+<section class="hero-section section-card">
+  <div class="hero-content">
+    <span class="hero-badge">WORKSPACE SUITE</span>
+    <h1>Elevate Your Daily Flow</h1>
+    <p class="subtitle">Welcome to TodoNova, your premium workspace. Seamlessly schedule, catalog, and execute tasks with high-precision visuals.</p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-value">{{ pending_count }}</span>
+        <span class="stat-label">Active Items</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">Online</span>
+        <span class="stat-label">System State</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-graphic-container">
+    <img src="{% static 'todo/images/dashboard_hero.png' %}?v=3" alt="TodoNova Productivity" class="hero-graphic" />
+  </div>
+</section>
+
+<!-- Split Workspace Grid -->
+<div class="dashboard-workspace">
+  <!-- Left Side: Task Creation -->
+  <div class="workspace-col form-col">
+    <section class="section-card">
+      <h2 class="workspace-title">Create Action</h2>
+      <p class="section-desc">Catalog a new operation in your local database</p>
+      
+      <form method="POST" class="task-form">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="{{ form.title.id_for_label }}" class="form-label">Task Title</label>
+          {{ form.title }}
+          {% if form.title.errors %}
+            <span class="error-text">{{ form.title.errors.0 }}</span>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.desc.id_for_label }}" class="form-label">Description</label>
+          {{ form.desc }}
+          {% if form.desc.errors %}
+            <span class="error-text">{{ form.desc.errors.0 }}</span>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.priority.id_for_label }}" class="form-label">Priority Level</label>
+          {{ form.priority }}
+          {% if form.priority.errors %}
+            <span class="error-text">{{ form.priority.errors.0 }}</span>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <span>Add Task</span>
+        </button>
+      </form>
+    </section>
+  </div>
+
+  <!-- Right Side: Task Registry -->
+  <div class="workspace-col list-col">
+    <section class="section-card">
+      <div class="task-list-title">
+        <span>Active Registry</span>
+        <span class="task-count-badge">{{ pending_count }} Pending</span>
+      </div>
+      
+      <div class="tasks-grid">
+        {% for task in tasks %}
+          <div class="task-card {% if task.completed %}task-completed{% endif %} priority-{{ task.priority }}">
+            <!-- Toggle Checkbox Button -->
+            <a href="{% url 'todo:toggle_task' task.id %}" class="task-toggle-btn {% if task.completed %}checked{% endif %}" title="Toggle completed state">
+              <span class="checkbox-tick"></span>
+            </a>
+            
+            <div class="task-content">
+              <div class="task-title-row">
+                <span class="task-title">{{ task.title }}</span>
+                <span class="priority-badge badge-{{ task.priority }}">{{ task.priority|upper }}</span>
+              </div>
+              {% if task.desc %}
+                <p class="task-desc">{{ task.desc }}</p>
+              {% endif %}
+              <div class="task-meta">
+                <span>Created on: {{ task.date|date:"M. d, Y, g:i A" }}</span>
+              </div>
+            </div>
+            
+            <div class="task-actions">
+              <a href="{% url 'todo:edit_task' task.id %}" class="btn btn-secondary btn-sm btn-warning">Edit</a>
+              <a href="{% url 'todo:delete_task' task.id %}" onclick="return confirm('Are you sure you want to delete this task?');" class="btn btn-secondary btn-sm btn-danger">Delete</a>
+            </div>
+          </div>
+        {% empty %}
+          <div class="empty-state">
+            <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            <h3>No tasks listed yet</h3>
+            <p>Get started by typing a task title on the left and clicking "Add Task"!</p>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

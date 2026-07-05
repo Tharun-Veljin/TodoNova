@@ -1,0 +1,57 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}TodoNova - Task Manager{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'todo/css/style.css' %}?v=3" />
+  </head>
+  <body>
+    <div class="app-container">
+      <header>
+        <div class="logo-container">
+          <img
+            src="{% static 'todo/images/logo.png' %}?v=3"
+            alt="logo"
+            class="logo-img"
+          />
+          <span class="brand-name">TodoNova</span>
+        </div>
+        <nav>
+          <a
+            href="{% url 'todo:home' %}"
+            class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+            >Home</a
+          >
+          <a
+            href="{% url 'todo:about' %}"
+            class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}"
+            >About</a
+          >
+          <a
+            href="{% url 'todo:contact' %}"
+            class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}"
+            >Contact</a
+          >
+          <a
+            href="{% url 'todo:analytics' %}"
+            class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}"
+            >Analytics</a
+          >
+          <a
+            href="{% url 'todo:focus' %}"
+            class="nav-link {% if request.resolver_match.url_name == 'focus' %}active{% endif %}"
+            >Focus Zone</a
+          >
+        </nav>
+      </header>
+
+      <main>{% block content %}{% endblock %}</main>
+
+      <footer>
+        <p>&copy; 2026 TodoNova. All rights reserved.</p>
+      </footer>
+    </div>
+  </body>
+</html>

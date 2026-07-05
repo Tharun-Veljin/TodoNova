@@ -1,0 +1,382 @@
+{% extends 'base.html' %}
+{% block title %}TodoNova - Analytics{% endblock %}
+{% block content %}
+<section class="section-card">
+  <h1>Performance Analytics</h1>
+  <p class="subtitle">
+    Real-time statistics and productivity indicators for your task database.
+  </p>
+
+  <div
+    class="analytics-grid"
+    style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    "
+  >
+    <div
+      class="stat-card"
+      style="
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        border-top: 3px solid var(--color-primary);
+      "
+    >
+      <span
+        style="
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: var(--text-muted);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        "
+        >Total Cataloged</span
+      >
+      <span
+        style="
+          font-size: 2.25rem;
+          font-weight: 900;
+          color: #fff;
+          line-height: 1;
+        "
+        >{{ total }}</span
+      >
+      <span style="font-size: 0.75rem; color: var(--text-muted)"
+        >Overall items in registry</span
+      >
+    </div>
+
+    <div
+      class="stat-card"
+      style="
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        border-top: 3px solid var(--color-success);
+      "
+    >
+      <span
+        style="
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: var(--text-muted);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        "
+        >Completed</span
+      >
+      <span
+        style="
+          font-size: 2.25rem;
+          font-weight: 900;
+          color: var(--color-success);
+          line-height: 1;
+        "
+        >{{ completed }}</span
+      >
+      <span style="font-size: 0.75rem; color: var(--text-muted)"
+        >Successful completions</span
+      >
+    </div>
+
+    <div
+      class="stat-card"
+      style="
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        border-top: 3px solid var(--color-warning);
+      "
+    >
+      <span
+        style="
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: var(--text-muted);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        "
+        >Pending Actions</span
+      >
+      <span
+        style="
+          font-size: 2.25rem;
+          font-weight: 900;
+          color: var(--color-warning);
+          line-height: 1;
+        "
+        >{{ pending }}</span
+      >
+      <span style="font-size: 0.75rem; color: var(--text-muted)"
+        >Remaining queue size</span
+      >
+    </div>
+
+    <div
+      class="stat-card"
+      style="
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        border-top: 3px solid var(--color-pink);
+      "
+    >
+      <span
+        style="
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: var(--text-muted);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        "
+        >Completion Rate</span
+      >
+      <span
+        style="
+          font-size: 2.25rem;
+          font-weight: 900;
+          color: var(--color-pink);
+          line-height: 1;
+        "
+        >{{ rate }}%</span
+      >
+      <span style="font-size: 0.75rem; color: var(--text-muted)"
+        >Efficiency coefficient</span
+      >
+    </div>
+  </div>
+</section>
+
+<div
+  style="
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+  "
+  class="analytics-layout"
+>
+  <section
+    class="section-card"
+    style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 1.5rem;
+    "
+  >
+    <h2
+      style="
+        font-size: 1.4rem;
+        font-weight: 800;
+        align-self: flex-start;
+        background: linear-gradient(
+          135deg,
+          #ffffff 40%,
+          var(--color-primary) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      "
+    >
+      Completion Quotient
+    </h2>
+
+    <div
+      class="progress-ring-container"
+      style="
+        position: relative;
+        width: 180px;
+        height: 180px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      "
+    >
+      <svg style="width: 100%; height: 100%; transform: rotate(-90deg)">
+        <circle
+          cx="90"
+          cy="90"
+          r="80"
+          style="
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.03);
+            stroke-width: 12;
+          "
+        />
+        <circle
+          cx="90"
+          cy="90"
+          r="80"
+          style="fill: none; stroke: url(#goldGradient); stroke-width: 12; stroke-linecap: round; stroke-dasharray: 502; stroke-dashoffset: calc(502 - (502 * {{ rate }}) / 100); transition: stroke-dashoffset 1s ease-out;"
+        />
+        <defs>
+          <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#06b6d4" />
+            <stop offset="50%" stop-color="#a855f7" />
+            <stop offset="100%" stop-color="#ec4899" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <div
+        style="
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        "
+      >
+        <span style="font-size: 2.25rem; font-weight: 900; color: #fff"
+          >{{ rate }}%</span
+        >
+        <span
+          style="
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+          "
+          >Finished</span
+        >
+      </div>
+    </div>
+    <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 300px">
+      Keep completing active tasks to drive your quotient towards 100%.
+    </p>
+  </section>
+
+  <section
+    class="section-card"
+    style="display: flex; flex-direction: column; gap: 1.5rem"
+  >
+    <h2
+      style="
+        font-size: 1.4rem;
+        font-weight: 800;
+        background: linear-gradient(
+          135deg,
+          #ffffff 40%,
+          var(--color-accent) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      "
+    >
+      Priority Distribution
+    </h2>
+
+    <div style="display: flex; flex-direction: column; gap: 1.25rem">
+      <div
+        class="priority-progress-item"
+        style="display: flex; flex-direction: column; gap: 0.5rem"
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 700;
+          "
+        >
+          <span style="color: var(--color-danger)">High Priority</span>
+          <span>{{ high }} Tasks</span>
+        </div>
+        <div
+          style="
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 999px;
+            overflow: hidden;
+          "
+        >
+          <div
+            style="height: 100%; background: var(--color-danger); width: {% if total > 0 %}calc(({{ high }} / {{ total }}) * 100%){% else %}0%{% endif %}; border-radius: 999px;"
+          ></div>
+        </div>
+      </div>
+
+      <div
+        class="priority-progress-item"
+        style="display: flex; flex-direction: column; gap: 0.5rem"
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 700;
+          "
+        >
+          <span style="color: var(--color-warning)">Medium Priority</span>
+          <span>{{ medium }} Tasks</span>
+        </div>
+        <div
+          style="
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 999px;
+            overflow: hidden;
+          "
+        >
+          <div
+            style="height: 100%; background: var(--color-warning); width: {% if total > 0 %}calc(({{ medium }} / {{ total }}) * 100%){% else %}0%{% endif %}; border-radius: 999px;"
+          ></div>
+        </div>
+      </div>
+
+      <div
+        class="priority-progress-item"
+        style="display: flex; flex-direction: column; gap: 0.5rem"
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 700;
+          "
+        >
+          <span style="color: var(--color-primary)">Low Priority</span>
+          <span>{{ low }} Tasks</span>
+        </div>
+        <div
+          style="
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 999px;
+            overflow: hidden;
+          "
+        >
+          <div
+            style="height: 100%; background: var(--color-primary); width: {% if total > 0 %}calc(({{ low }} / {{ total }}) * 100%){% else %}0%{% endif %}; border-radius: 999px;"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
